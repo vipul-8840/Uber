@@ -132,12 +132,84 @@ Example:
   }
   ```
 
+### GET /user/profile
+
+#### Description
+This endpoint is used to get the profile of the logged-in user.
+
+#### Request Headers
+- `Authorization`: Bearer token (required)
+
+Example:
+```
+Authorization: Bearer jwt_token
+```
+
+#### Responses
+
+- **200 OK**
+  - **Description**: User profile retrieved successfully.
+  - **Body**: A JSON object containing the user details.
+  ```json
+  {
+    "_id": "user_id",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com"
+  }
+  ```
+
+- **401 Unauthorized**
+  - **Description**: Invalid or missing token.
+  - **Body**: A JSON object containing the error message.
+  ```json
+  {
+    "message": "Unauthorized"
+  }
+  ```
+
+### GET /user/logout
+
+#### Description
+This endpoint is used to log out the user.
+
+#### Request Headers
+- `Authorization`: Bearer token (required)
+
+Example:
+```
+Authorization: Bearer jwt_token
+```
+
+#### Responses
+
+- **200 OK**
+  - **Description**: User successfully logged out.
+  - **Body**: A JSON object containing the success message.
+  ```json
+  {
+    "message": "Logged Out"
+  }
+  ```
+
+- **401 Unauthorized**
+  - **Description**: Invalid or missing token.
+  - **Body**: A JSON object containing the error message.
+  ```json
+  {
+    "message": "Unauthorized"
+  }
+  ```
+
 #### Example Request
 ```bash
-curl -X POST http://localhost:3000/user/login \
--H "Content-Type: application/json" \
--d '{
-  "email": "john.doe@example.com",
-  "password": "password123"
-}'
+curl -X GET http://localhost:3000/user/profile \
+-H "Authorization: Bearer jwt_token"
+```
+
+```bash
+curl -X GET http://localhost:3000/user/logout \
+-H "Authorization: Bearer jwt_token"
 ```
