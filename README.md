@@ -308,22 +308,173 @@ Example:
   }
   ```
 
-#### Example Request
+### POST /captain/login
+
+#### Description
+This endpoint is used to log in an existing captain.
+
+#### Request Body
+The request body must be a JSON object containing the following fields:
+- `email`: A valid email address (required)
+- `password`: A string with at least 6 characters (required)
+
+Example:
+```json
+{
+  "email": "captain@example.com",
+  "password": "password123"
+}
+```
+
+#### Responses
+
+- **200 OK**
+  - **Description**: Captain successfully logged in.
+  - **Body**: A JSON object containing the captain details and authentication token.
+  ```json
+  {
+    "captain": {
+      "_id": "captain_id",
+      "email": "captain@example.com",
+      "fullname": {
+        "firstname": "Jane",
+        "lastname": "Doe"
+      },
+      "vehicle": {
+        "color": "Red",
+        "plate": "ABC123",
+        "capacity": 4,
+        "vehicleType": "car"
+      }
+    },
+    "token": "jwt_token"
+  }
+  ```
+
+- **400 Bad Request**
+  - **Description**: Validation error or missing required fields.
+  - **Body**: A JSON object containing the validation errors.
+  ```json
+  {
+    "errors": [
+      {
+        "msg": "Invalid email",
+        "param": "email",
+        "location": "body"
+      },
+      {
+        "msg": "Password must be at least 6 characters long",
+        "param": "password",
+        "location": "body"
+      }
+    ]
+  }
+  ```
+
+- **401 Unauthorized**
+  - **Description**: Invalid email or password.
+  - **Body**: A JSON object containing the error message.
+  ```json
+  {
+    "message": "invalid email or password"
+  }
+  ```
+
+### GET /captain/profile
+
+#### Description
+This endpoint is used to get the profile of the logged-in captain.
+
+#### Request Headers
+- `Authorization`: Bearer token (required)
+
+Example:
+```
+Authorization: Bearer jwt_token
+```
+
+#### Responses
+
+- **200 OK**
+  - **Description**: Captain profile retrieved successfully.
+  - **Body**: A JSON object containing the captain details.
+  ```json
+  {
+    "captain": {
+      "_id": "captain_id",
+      "email": "captain@example.com",
+      "fullname": {
+        "firstname": "Jane",
+        "lastname": "Doe"
+      },
+      "vehicle": {
+        "color": "Red",
+        "plate": "ABC123",
+        "capacity": 4,
+        "vehicleType": "car"
+      }
+    }
+  }
+  ```
+
+- **401 Unauthorized**
+  - **Description**: Invalid or missing token.
+  - **Body**: A JSON object containing the error message.
+  ```json
+  {
+    "message": "Unauthorized"
+  }
+  ```
+
+### GET /captain/logout
+
+#### Description
+This endpoint is used to log out the captain.
+
+#### Request Headers
+- `Authorization`: Bearer token (required)
+
+Example:
+```
+Authorization: Bearer jwt_token
+```
+
+#### Responses
+
+- **200 OK**
+  - **Description**: Captain successfully logged out.
+  - **Body**: A JSON object containing the success message.
+  ```json
+  {
+    "message": "Logged Out"
+  }
+  ```
+
+- **401 Unauthorized**
+  - **Description**: Invalid or missing token.
+  - **Body**: A JSON object containing the error message.
+  ```json
+  {
+    "message": "Unauthorized"
+  }
+  ```
+
+#### Example Requests
 ```bash
-curl -X POST http://localhost:3000/captain/register \
+curl -X POST http://localhost:3000/captain/login \
 -H "Content-Type: application/json" \
 -d '{
   "email": "captain@example.com",
-  "password": "password123",
-  "fullname": {
-    "firstname": "Jane",
-    "lastname": "Doe"
-  },
-  "vehicle": {
-    "color": "Red",
-    "plate": "ABC123",
-    "capacity": 4,
-    "vehicleType": "car"
-  }
+  "password": "password123"
 }'
+```
+
+```bash
+curl -X GET http://localhost:3000/captain/profile \
+-H "Authorization: Bearer jwt_token"
+```
+
+```bash
+curl -X GET http://localhost:3000/captain/logout \
+-H "Authorization: Bearer jwt_token"
 ```
