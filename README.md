@@ -1,75 +1,143 @@
-# User Registration Endpoint Documentation
+# Backend Uber API Documentation
 
-## Endpoint
-`POST /user/register`
+## Endpoints
 
-## Description
-This endpoint allows a new user to register by providing their first name, last name, email, and password. The user data is validated and stored in the database, and a JWT token is generated upon successful registration.
+### POST /user/register
 
-## Request Body
-The request body should be a JSON object containing the following fields:
+#### Description
+This endpoint is used to register a new user.
 
-- `fullname.firstname` (string, required): The first name of the user. Must be at least 3 characters long.
-- `fullname.lastname` (string, optional): The last name of the user. Must be at least 3 characters long if provided.
-- `email` (string, required): The email address of the user. Must be a valid email format.
-- `password` (string, required): The password for the user account. Must be at least 6 characters long.
+#### Request Body
+The request body must be a JSON object containing the following fields:
+- `fullname`: An object containing:
+  - `firstname`: A string with at least 3 characters (required)
+  - `lastname`: A string with at least 3 characters (optional)
+- `email`: A valid email address (required)
+- `password`: A string with at least 6 characters (required)
 
-### Example
+Example:
 ```json
 {
-    "fullname": {
-        "firstname": "John",
-        "lastname": "Doe"
-    },
-    "email": "john.doe@example.com",
-    "password": "password123"
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.doe@example.com",
+  "password": "password123"
 }
 ```
 
-## Response
-### Success
-- **Status Code:** 201 Created
-- **Body:**
+#### Responses
+
+- **201 Created**
+  - **Description**: User successfully registered.
+  - **Body**: A JSON object containing the user details and authentication token.
   ```json
   {
-      "user": {
-          "_id": "user_id",
-          "fullname": {
-              "firstname": "John",
-              "lastname": "Doe"
-          },
-          "email": "john.doe@example.com",
-          "socketId": null
+    "user": {
+      "_id": "user_id",
+      "fullname": {
+        "firstname": "John",
+        "lastname": "Doe"
       },
-      "token": "jwt_token"
+      "email": "john.doe@example.com"
+    },
+    "token": "jwt_token"
   }
   ```
 
-### Validation Errors
-- **Status Code:** 400 Bad Request
-- **Body:**
+- **400 Bad Request**
+  - **Description**: Validation error or missing required fields.
+  - **Body**: A JSON object containing the validation errors.
   ```json
   {
-      "errors": [
-          {
-              "msg": "Error message",
-              "param": "field_name",
-              "location": "body"
-          }
-      ]
+    "errors": [
+      {
+        "msg": "First name must be at least 3 characters long",
+        "param": "fullname.firstname",
+        "location": "body"
+      },
+      {
+        "msg": "Invalid email",
+        "param": "email",
+        "location": "body"
+      }
+    ]
   }
   ```
 
-### Missing Fields
-- **Status Code:** 400 Bad Request
-- **Body:**
+### POST /user/login
+
+#### Description
+This endpoint is used to log in an existing user.
+
+#### Request Body
+The request body must be a JSON object containing the following fields:
+- `email`: A valid email address (required)
+- `password`: A string with at least 6 characters (required)
+
+Example:
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "password123"
+}
+```
+
+#### Responses
+
+- **200 OK**
+  - **Description**: User successfully logged in.
+  - **Body**: A JSON object containing the user details and authentication token.
   ```json
   {
-      "message": "All Fields are required"
+    "user": {
+      "_id": "user_id",
+      "fullname": {
+        "firstname": "John",
+        "lastname": "Doe"
+      },
+      "email": "john.doe@example.com"
+    },
+    "token": "jwt_token"
   }
   ```
 
-## Notes
-- Ensure that the email provided is unique and not already registered in the system.
-- The password is hashed before being stored in the database for security purposes.
-- A JWT token is generated and returned in the response for authentication purposes.
+- **400 Bad Request**
+  - **Description**: Validation error or missing required fields.
+  - **Body**: A JSON object containing the validation errors.
+  ```json
+  {
+    "errors": [
+      {
+        "msg": "Invalid email",
+        "param": "email",
+        "location": "body"
+      },
+      {
+        "msg": "Password must be at least 6 characters long",
+        "param": "password",
+        "location": "body"
+      }
+    ]
+  }
+  ```
+
+- **401 Unauthorized**
+  - **Description**: Invalid email or password.
+  - **Body**: A JSON object containing the error message.
+  ```json
+  {
+    "message": "invalid email or password"
+  }
+  ```
+
+#### Example Request
+```bash
+curl -X POST http://localhost:3000/user/login \
+-H "Content-Type: application/json" \
+-d '{
+  "email": "john.doe@example.com",
+  "password": "password123"
+}'
+```
