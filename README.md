@@ -203,13 +203,127 @@ Authorization: Bearer jwt_token
   }
   ```
 
-#### Example Request
-```bash
-curl -X GET http://localhost:3000/user/profile \
--H "Authorization: Bearer jwt_token"
+### POST /captain/register
+
+#### Description
+This endpoint is used to register a new captain.
+
+#### Request Body
+The request body must be a JSON object containing the following fields:
+- `email`: A valid email address (required)
+- `password`: A string with at least 6 characters (required)
+- `fullname`: An object containing:
+  - `firstname`: A string with at least 3 characters (required)
+  - `lastname`: A string with at least 3 characters (optional)
+- `vehicle`: An object containing:
+  - `color`: A string with at least 3 characters (required)
+  - `plate`: A string with at least 3 characters (required)
+  - `capacity`: An integer with at least 1 (required)
+  - `vehicleType`: A string that must be either 'car', 'bike', or 'auto' (required)
+
+Example:
+```json
+{
+  "email": "captain@example.com",
+  "password": "password123",
+  "fullname": {
+    "firstname": "Jane",
+    "lastname": "Doe"
+  },
+  "vehicle": {
+    "color": "Red",
+    "plate": "ABC123",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
 ```
 
+#### Responses
+
+- **201 Created**
+  - **Description**: Captain successfully registered.
+  - **Body**: A JSON object containing the captain details.
+  ```json
+  {
+    "captain": {
+      "_id": "captain_id",
+      "email": "captain@example.com",
+      "fullname": {
+        "firstname": "Jane",
+        "lastname": "Doe"
+      },
+      "vehicle": {
+        "color": "Red",
+        "plate": "ABC123",
+        "capacity": 4,
+        "vehicleType": "car"
+      }
+    }
+  }
+  ```
+
+- **400 Bad Request**
+  - **Description**: Validation error or missing required fields.
+  - **Body**: A JSON object containing the validation errors.
+  ```json
+  {
+    "errors": [
+      {
+        "msg": "Invalid email",
+        "param": "email",
+        "location": "body"
+      },
+      {
+        "msg": "Password must be at least 6 characters long",
+        "param": "password",
+        "location": "body"
+      },
+      {
+        "msg": "firstname must be atleast 3 characters long",
+        "param": "fullname.firstname",
+        "location": "body"
+      },
+      {
+        "msg": "color must be atleast 3 characters long",
+        "param": "vehicle.color",
+        "location": "body"
+      },
+      {
+        "msg": "plate must be atleast 3 characters long",
+        "param": "vehicle.plate",
+        "location": "body"
+      },
+      {
+        "msg": "capacity must be atleast 1",
+        "param": "vehicle.capacity",
+        "location": "body"
+      },
+      {
+        "msg": "vehicle type must be car,bike or auto",
+        "param": "vehicle.vehicleType",
+        "location": "body"
+      }
+    ]
+  }
+  ```
+
+#### Example Request
 ```bash
-curl -X GET http://localhost:3000/user/logout \
--H "Authorization: Bearer jwt_token"
+curl -X POST http://localhost:3000/captain/register \
+-H "Content-Type: application/json" \
+-d '{
+  "email": "captain@example.com",
+  "password": "password123",
+  "fullname": {
+    "firstname": "Jane",
+    "lastname": "Doe"
+  },
+  "vehicle": {
+    "color": "Red",
+    "plate": "ABC123",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}'
 ```
