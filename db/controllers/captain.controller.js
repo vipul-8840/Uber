@@ -2,6 +2,7 @@ const captainModel = require("../models/captain.model");
 const captainService = require("../services/captain.service");
 const {validationResult}= require("express-validator");
 const BlacklistTokenModel = require("../models/blacklistToken.model");
+const bcrypt = require('bcrypt');
 
 
 
@@ -55,7 +56,8 @@ module.exports.loginCaptain = async (req, res, next) => {
     }
 
     const isMatch = await captain.comparePassword (password);
-    console.log(isMatch)
+
+    
 
     if (!isMatch) {
         return res.status(401).json({ message: 'Invalid  password' });
@@ -74,9 +76,16 @@ module.exports.getCaptainProfile = async (req,res,next)=>{
 }
 module.exports.logoutCaptain = async (req,res,next)=>{
 
-        const token = req.cookies.token || req.headers.authorization.split(' ')[1];
+        const token =   req.cookies?.token || req.headers.authorization?.split(' ')[1];
     
-        await BlacklistTokenModel.create({token});
+        if (!token) {
+            return res.status(400).json({ message: "Token is required for logout." });
+        }
+
+        const existingToken = await BlacklistTokenModel.findOne({ token });
+        if (!existingToken) {
+            await BlacklistTokenModel.create({ token });
+        }
         res.clearCookie('token');
     
         res.status(200).json({message:"Logged Out"})

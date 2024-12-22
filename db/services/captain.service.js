@@ -11,13 +11,9 @@ module.exports.createCaptain=  async({
   {
         throw new Error("All fields are required");
   }
-
-    const hashedPassword = await captainModel.hashPassword(password);
-
-
-    const captain =  captainModel.create({
+  const captain =  captainModel.create({
         email,
-        password:hashedPassword,
+        password,
         fullname:{
             firstname,
             lastname
